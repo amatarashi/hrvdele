@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://amatarashi.github.io/hrvdele/sitemap.xml
