@@ -444,7 +444,15 @@ ul { margin: 0; padding: 0; list-style: none; }
 .js .rv-in.is-in { opacity: 1; transform: none; }
 .js .stat__num::after { --mk: 0; }
 .js .is-in .stat__num::after, .js .stat__num.is-in::after { --mk: 1; }
+/* Плавный переход между страницами (Chrome, Edge, Safari 18+) */
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: vt-out .22s ease both; }
+::view-transition-new(root) { animation: vt-in .32s ease both; }
+@keyframes vt-out { to { opacity: 0; } }
+@keyframes vt-in { from { opacity: 0; transform: translateY(8px); } }
+
 @media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
   html { scroll-behavior: auto; }
   .js .rv-in { opacity: 1; transform: none; transition: none; }
   .js .stat__num::after { --mk: 1; transition: none; }

@@ -26,6 +26,16 @@
     });
   }
 
+  /* ---------- Ссылка на текущую страницу (логотип, пункт меню) — плавно наверх без перезагрузки ---------- */
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest("a[href]");
+    if (!a || e.ctrlKey || e.metaKey || e.shiftKey || a.target === "_blank") return;
+    var url = new URL(a.href, location.href);
+    if (url.origin !== location.origin || url.pathname !== location.pathname || url.hash) return;
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
   /* ---------- Появление при прокрутке + счётчики ---------- */
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   function countUp(el) {
