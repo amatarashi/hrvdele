@@ -404,6 +404,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 .contact:hover { transform: translateY(-3px); box-shadow: var(--shadow-lift); }
 .contact b { display: block; color: var(--navy); font-size: 16px; }
 .contact small { color: var(--muted); font-size: 14px; }
+.contact > div:not(.svc__icon) { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 360px) { .contact { padding: 18px; gap: 12px; } }
 .contact > svg:last-child { margin-left: auto; width: 20px; height: 20px; color: var(--blue); flex: none; }
 
 /* ---------- Текстовые страницы ---------- */
