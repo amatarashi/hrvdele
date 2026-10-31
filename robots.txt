@@ -1,3 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /spasibo/
+
 Sitemap: https://amatarashi.github.io/hrvdele/sitemap.xml
