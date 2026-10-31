@@ -1,0 +1,45 @@
+# Настройки для хостинга Timeweb (Apache). На Vercel и GitHub Pages файл игнорируется.
+AddDefaultCharset utf-8
+Options -Indexes
+DirectoryIndex index.html
+ErrorDocument 404 /404.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Одно зеркало: https и без www (защита от дублей)
+  RewriteCond %{HTTPS} off [OR]
+  RewriteCond %{HTTP_HOST} ^www\. [NC]
+  RewriteCond %{HTTP_HOST} ^(?:www\.)?(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+
+  # /index.html и /раздел/index.html -> адрес со слешем
+  RewriteCond %{THE_REQUEST} \s/+(.*/)?index\.html[\s?] [NC]
+  RewriteRule ^ /%1 [R=301,L]
+
+  # /раздел -> /раздел/
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^(.*[^/])$ /$1/ [R=301,L]
+</IfModule>
+
+# Сжатие
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml text/xml application/xml text/plain application/manifest+json
+</IfModule>
+
+# Кэш статики
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType text/css "access plus 7 days"
+  ExpiresByType application/javascript "access plus 7 days"
+  ExpiresByType image/webp "access plus 30 days"
+  ExpiresByType image/jpeg "access plus 30 days"
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType image/svg+xml "access plus 30 days"
+  ExpiresByType image/x-icon "access plus 30 days"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+
+AddType font/woff2 .woff2
+AddType application/manifest+json .webmanifest

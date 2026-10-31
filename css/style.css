@@ -422,7 +422,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* ---------- Подвал ---------- */
 .footer { margin-top: clamp(56px, 8vw, 104px); padding-bottom: 16px; }
 .footer__card { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; gap: 32px; }
-.footer h4 { font: 600 13px/1.3 var(--f-body); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 14px; }
+.footer__h { font: 600 13px/1.3 var(--f-body); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 14px; }
 .footer ul { display: grid; gap: 10px; }
 .footer a:hover { color: var(--blue); }
 .footer__about p { color: var(--muted); font-size: 14.5px; margin-top: 14px; max-width: 300px; }
