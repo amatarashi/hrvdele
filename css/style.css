@@ -506,3 +506,4 @@ ul { margin: 0; padding: 0; list-style: none; }
   .faq .faq__a { padding: 0 18px 18px; }
   .badge { padding: 12px 14px; }
 }
+.rv__half { background: linear-gradient(90deg, #F5A524 50%, #D9DEE6 50%); -webkit-background-clip: text; background-clip: text; color: transparent; }
