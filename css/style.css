@@ -528,3 +528,6 @@ ul { margin: 0; padding: 0; list-style: none; }
   .badge { padding: 12px 14px; }
 }
 .rv__half { background: linear-gradient(90deg, #F5A524 50%, #D9DEE6 50%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* Ловушка для спам-ботов в форме */
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }

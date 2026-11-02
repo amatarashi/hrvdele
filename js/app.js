@@ -162,7 +162,7 @@
       }
       var data = {};
       new FormData(form).forEach(function (v, k) { data[k] = v; });
-      data.page = location.pathname;
+      data.page = location.href.split("?")[0];
       var btn = form.querySelector("button[type=submit]");
       btn.disabled = true; btn.textContent = "Отправляю…";
       var endpoint = form.getAttribute("data-endpoint");
@@ -171,20 +171,9 @@
         location.href = (window.HR_BASE || "/") + "spasibo/";
       };
       if (!endpoint) { setTimeout(done, 500); return; }
-      var payload = {
-        access_key: form.getAttribute("data-key"),
-        subject: "Заявка с сайта HRвДеле" + (data.service ? " — " + data.service : ""),
-        from_name: "Сайт HRвДеле",
-        "Имя": data.name,
-        "Телефон или Telegram": data.contact,
-        "Услуга": data.service || "—",
-        "Сообщение": data.message || "—",
-        "Страница": location.href.split("?")[0],
-        "Согласие на обработку ПД": "да"
-      };
-      fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(payload) })
+      fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(data) })
         .then(function (r) { return r.json(); })
-        .then(function (j) { if (!j.success) throw new Error(j.message); done(); })
+        .then(function (j) { if (!j.ok) throw new Error(j.error); done(); })
         .catch(function () {
           btn.disabled = false; btn.textContent = "Отправить заявку";
           alert("Не получилось отправить заявку. Напишите мне в Telegram или WhatsApp, позвоните или отправьте письмо на s.krasovskaya22@yandex.ru — отвечу.");
