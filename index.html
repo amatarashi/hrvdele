@@ -251,7 +251,7 @@
   <div class="card card--blue lead-info rv-in">
     <span class="tag">Бесплатная оценка задачи</span>
     <h2 class="h-sec">Расскажите о задаче — предложу решение</h2>
-    <p class="lead">Расскажите коротко о задаче — разберу вашу ситуацию и предложу, что делать и сколько это будет стоить. Консультация ни к чему не обязывает.</p>
+    <p class="lead">Расскажите коротко о задаче — разберу вашу ситуацию и предложу, что делать и сколько это будет стоить. Оценка задачи ни к чему не обязывает.</p>
     <ul class="lead-info__list">
       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Отвечу в течение рабочего дня · пн–пт, 10:00–18:00</span></li>
       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>Работаю лично — без менеджеров и колл-центра</span></li>
@@ -264,18 +264,18 @@
     </div>
   </div>
   <div class="card rv-in">
-    <form class="form" data-lead novalidate>
+    <form class="form" method="post" data-lead novalidate>
       <h3>Оставьте заявку</h3>
       <input type="hidden" name="service">
       <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
       <div class="field"><label for="f-name">Имя <em>*</em></label>
-        <input id="f-name" name="name" autocomplete="name" placeholder="Как к вам обращаться" data-req>
+        <input id="f-name" name="name" maxlength="100" autocomplete="name" placeholder="Как к вам обращаться" data-req>
         <span class="field__err">Напишите, как к вам обращаться</span></div>
       <div class="field"><label for="f-contact">Телефон или Telegram <em>*</em></label>
-        <input id="f-contact" name="contact" autocomplete="tel" inputmode="text" placeholder="+7 900 000-00-00 или @ник" data-req>
+        <input id="f-contact" name="contact" maxlength="100" autocomplete="tel" inputmode="text" placeholder="+7 900 000-00-00 или @ник" data-req>
         <span class="field__err">Укажите телефон или ник в Telegram</span></div>
       <div class="field"><label for="f-msg">Коротко о задаче</label>
-        <textarea id="f-msg" name="message" placeholder="Например: нужно поставить воинский учёт, 15 сотрудников"></textarea></div>
+        <textarea id="f-msg" name="message" maxlength="3000" placeholder="Например: нужно поставить воинский учёт, 15 сотрудников"></textarea></div>
       <label class="consent"><input type="checkbox" name="consent" value="yes">
         <span>Даю <a href="/hrvdele/soglasie/" target="_blank">согласие на обработку персональных данных</a></span></label>
       <p class="consent__note">Как я обращаюсь с данными — в <a href="/hrvdele/politika/" target="_blank">политике конфиденциальности</a>.</p>

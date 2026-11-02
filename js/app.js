@@ -162,7 +162,7 @@
       consent.closest(".consent").classList.toggle("is-err", !consent.checked);
       if (!consent.checked) ok = false;
       if (!ok) {
-        var first = form.querySelector(".is-err input, .is-err");
+        var first = form.querySelector(".is-err input, .is-err textarea");
         if (first && first.focus) first.focus();
         return;
       }
@@ -177,10 +177,14 @@
         location.href = (window.HR_BASE || "/") + "spasibo/";
       };
       if (!endpoint) { setTimeout(done, 500); return; }
-      fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(data) })
+      // Если сервер не ответил за 15 секунд — показываем ошибку, а не вечное «Отправляю…»
+      var ctrl = window.AbortController ? new AbortController() : null;
+      var timer = ctrl && setTimeout(function () { ctrl.abort(); }, 15000);
+      fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(data), signal: ctrl && ctrl.signal })
         .then(function (r) { return r.json(); })
-        .then(function (j) { if (!j.ok) throw new Error(j.error); done(); })
+        .then(function (j) { clearTimeout(timer); if (!j.ok) throw new Error(j.error); done(); })
         .catch(function () {
+          clearTimeout(timer);
           btn.disabled = false; btn.textContent = "Отправить заявку";
           alert("Не получилось отправить заявку. Напишите мне в Telegram или WhatsApp, позвоните или отправьте письмо на s.krasovskaya22@yandex.ru — отвечу.");
         });
