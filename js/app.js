@@ -24,6 +24,12 @@
         burger.setAttribute("aria-expanded", "false");
       });
     });
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape" || !doc.classList.contains("menu-open")) return;
+      doc.classList.remove("menu-open");
+      burger.setAttribute("aria-expanded", "false");
+      burger.focus();
+    });
   }
 
   /* ---------- Ссылка на текущую страницу (логотип, пункт меню) — плавно наверх без перезагрузки ---------- */
