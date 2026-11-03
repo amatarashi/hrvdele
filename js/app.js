@@ -106,45 +106,6 @@
     });
   });
 
-  /* ---------- Подбор формата (воинский учёт) ---------- */
-  var quiz = document.querySelector("[data-quiz]");
-  if (quiz) {
-    var res = quiz.querySelector("[data-quiz-res]");
-    var list = res.querySelector("ul");
-    var empty = res.querySelector(".quiz__empty");
-    var go = res.querySelector("[data-quiz-go]");
-    var rec = {
-      none: ["Постановка на воинский учёт с нуля", "Ведение — чтобы учёт дальше вёлся без вас"],
-      messy: ["Аудит воинского учёта — отчёт с рисками и планом", "Ведение — чтобы порядок не развалился снова"],
-      check: ["Годовая сверка с военкоматом", "Проверка документов перед сверкой"],
-      keep: ["Ведение воинского учёта — оплата только за события, без абонентской платы"]
-    };
-    function render() {
-      var sit = quiz.querySelector("input[name=q_sit]:checked");
-      var size = quiz.querySelector("input[name=q_size]:checked");
-      var city = quiz.querySelector("input[name=q_city]:checked");
-      if (!sit) { list.innerHTML = ""; empty.hidden = false; go.hidden = true; return; }
-      var items = rec[sit.value].slice();
-      if (city) {
-        items.push(city.value === "msk"
-          ? "Документы готовлю онлайн, в военкомат в СПб еду сама, в Москве — мой проверенный специалист"
-          : "Всё онлайн: документы готовлю и согласую удалённо");
-      }
-      list.innerHTML = items.map(function (s) { return "<li>" + s + "</li>"; }).join("");
-      empty.hidden = true; go.hidden = false;
-      var parts = [sit.parentNode.textContent.trim()];
-      if (size) parts.push("сотрудников: " + size.parentNode.textContent.trim());
-      if (city) parts.push(city.parentNode.textContent.trim());
-      go.setAttribute("data-prefill", "Подбор: " + parts.join("; "));
-    }
-    quiz.addEventListener("change", render);
-    go.addEventListener("click", function () {
-      var msg = document.querySelector("#lead textarea");
-      if (msg) msg.value = go.getAttribute("data-prefill");
-    });
-    render();
-  }
-
   /* ---------- Формы заявки ---------- */
   var PHONE = /[\d]{6,}/;
   document.querySelectorAll("form[data-lead]").forEach(function (form) {
@@ -197,11 +158,14 @@
     });
   });
 
-  /* Кнопки «Узнать цену» подставляют услугу в форму */
+  /* Кнопки «Узнать цену» и карточки ситуаций подставляют услугу в форму.
+     Свой текст человека не трогаем — заменяем только то, что подставили сами. */
+  var autoMsg = "";
   document.querySelectorAll("[data-service]").forEach(function (a) {
     a.addEventListener("click", function () {
       var msg = document.querySelector("#lead textarea");
-      if (msg && !msg.value) msg.value = "Интересует: " + a.getAttribute("data-service");
+      if (!msg || (msg.value && msg.value !== autoMsg)) return;
+      msg.value = autoMsg = "Интересует: " + a.getAttribute("data-service");
     });
   });
 
