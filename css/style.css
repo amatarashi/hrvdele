@@ -428,7 +428,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 60; display: none;
   transform: translateY(140%); transition: transform .35s cubic-bezier(.2, .7, .2, 1);
 }
-.fab .btn { width: 100%; }
+.fab .btn { width: 100%; box-shadow: 0 0 0 2px #fff, 0 8px 24px rgba(15, 23, 41, .22); } /* белая обводка: не сливается с синими блоками */
 .fab.is-on { transform: none; }
 
 /* ---------- Появление ---------- */
@@ -540,11 +540,6 @@ ul { margin: 0; padding: 0; list-style: none; }
   .sit__price small { margin: 0; }
   .sit__foot .btn { flex: 1 1 100%; min-height: 48px; }
   .sit-other .btn { width: 100%; }
-  /* Ссылки — не меньше 44 px в высоту, чтобы попадать пальцем */
-  .logo { display: inline-flex; align-items: center; min-height: 44px; }
-  .svc .link-arrow { min-height: 44px; }
-  .footer li a { padding: 10px 0; }
-  .footer__bottom a { display: inline-block; padding: 13px 0; }
 }
 
 .sit-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -578,6 +573,14 @@ ul { margin: 0; padding: 0; list-style: none; }
   .risk { padding: 20px; }
   .vs__row span { padding: 10px 12px; font-size: 14px; }
   .why .btn, .risks__cta .btn, .cta-row .btn { width: 100%; }
+}
+
+/* Телефоны и планшеты: ссылки не меньше 44 px в высоту, чтобы попадать пальцем */
+@media (max-width: 1024px), (pointer: coarse) {
+  .logo { display: inline-flex; align-items: center; min-height: 44px; }
+  .svc .link-arrow { min-height: 44px; }
+  .footer li a { padding: 10px 0; }
+  .footer__bottom a { display: inline-block; padding: 13px 0; }
 }
 
 /* Ловушка для спам-ботов в форме */
