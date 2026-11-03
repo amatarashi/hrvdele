@@ -32,22 +32,55 @@
     });
   }
 
-  /* ---------- Ссылка на текущую страницу (логотип, пункт меню) — плавно наверх без перезагрузки ---------- */
-  document.addEventListener("click", function (e) {
-    var a = e.target.closest("a[href]");
-    if (!a || e.ctrlKey || e.metaKey || e.shiftKey || a.target === "_blank") return;
-    var url = new URL(a.href, location.href);
-    if (url.origin !== location.origin || url.pathname !== location.pathname || url.hash) return;
-    e.preventDefault();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
-
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* ---------- Плавная прокрутка колёсиком мыши (только ПК; телефон и тачпад — как есть) ---------- */
+  /* ---------- Плавная прокрутка ----------
+     1) Кнопки и ссылки на блоки этой же страницы (#lead, #ceny…) и логотип — плавно едут к месту
+        на любом устройстве: телефон, планшет, ПК.
+     2) Колёсико мыши на ПК — мягкая докрутка. Палец на телефоне и тачпад — родная прокрутка
+        устройства, она уже плавная и с инерцией: её не подменяем, иначе будет «вязко». */
+  var sRaf = 0, sCur = 0, sTarget = 0, aRaf = 0;
+  var maxY = function () { return document.documentElement.scrollHeight - innerHeight; };
+  var jump = function (y) { window.scrollTo({ top: y, behavior: "instant" }); };
+  var stopAll = function () {
+    if (sRaf) { cancelAnimationFrame(sRaf); sRaf = 0; }
+    if (aRaf) { cancelAnimationFrame(aRaf); aRaf = 0; }
+  };
+  var ease = function (t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
+  function smoothTo(y) {
+    stopAll();
+    y = Math.max(0, Math.min(maxY(), Math.round(y)));
+    var from = scrollY, dist = y - from;
+    if (reduce || Math.abs(dist) < 2) { jump(y); return; }
+    // Чем дальше, тем дольше, но не дольше 1,1 с
+    var dur = Math.min(1100, 450 + Math.abs(dist) * 0.12), t0 = 0;
+    var step = function (t) {
+      if (!t0) t0 = t;
+      var p = Math.min((t - t0) / dur, 1);
+      jump(from + dist * ease(p));
+      aRaf = p < 1 ? requestAnimationFrame(step) : 0;
+    };
+    aRaf = requestAnimationFrame(step);
+    // Страховка: если анимация не пошла (вкладка в фоне, экономия батареи) — всё равно доезжаем
+    setTimeout(function () { if (!t0) { stopAll(); jump(y); } }, 300);
+  }
+  // Отступ сверху под липкую шапку (тот же, что scroll-padding-top в стилях)
+  var headOffset = function () { return parseFloat(getComputedStyle(doc).scrollPaddingTop) || 0; };
+
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest("a[href]");
+    if (!a || e.defaultPrevented || e.ctrlKey || e.metaKey || e.shiftKey || a.target === "_blank") return;
+    var url = new URL(a.href, location.href);
+    if (url.origin !== location.origin || url.pathname !== location.pathname) return;
+    var el = url.hash ? document.getElementById(decodeURIComponent(url.hash.slice(1))) : null;
+    if (url.hash && !el) return;
+    e.preventDefault();
+    smoothTo(el ? el.getBoundingClientRect().top + scrollY - headOffset() : 0);
+    if (url.hash && location.hash !== url.hash) history.pushState(null, "", url.hash);
+    else if (!url.hash && location.hash) history.pushState(null, "", url.pathname + url.search);
+  });
+
   if (!reduce && !shot && window.matchMedia("(pointer: fine)").matches) {
-    var sTarget = 0, sCur = 0, sRaf = 0;
-    var maxY = function () { return document.documentElement.scrollHeight - innerHeight; };
     // Прокрутка внутри своих областей (текст в форме, лента отзывов, меню) — не трогаем
     var ownScroll = function (el, dy) {
       for (; el && el !== document.body && el !== doc; el = el.parentElement) {
@@ -61,25 +94,29 @@
     var sStep = function () {
       sCur += (sTarget - sCur) * 0.11;
       if (Math.abs(sTarget - sCur) < 0.5) { sCur = sTarget; sRaf = 0; }
-      window.scrollTo({ top: sCur, behavior: "instant" });
+      jump(sCur);
       if (sRaf) sRaf = requestAnimationFrame(sStep);
     };
     window.addEventListener("wheel", function (e) {
       if (e.ctrlKey || e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
       var dy = e.deltaY * (e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? innerHeight : 1);
       // Мелкие шаги — это тачпад, он и так плавный
-      if (e.deltaMode === 0 && Math.abs(dy) < 40 && !sRaf) return;
+      if (e.deltaMode === 0 && Math.abs(dy) < 40 && !sRaf) { if (aRaf) stopAll(); return; }
       if (ownScroll(e.target, dy)) return;
       e.preventDefault();
+      if (aRaf) { cancelAnimationFrame(aRaf); aRaf = 0; }
       if (!sRaf) { sCur = sTarget = scrollY; }
       sTarget = Math.max(0, Math.min(maxY(), sTarget + dy));
       if (!sRaf) sRaf = requestAnimationFrame(sStep);
     }, { passive: false });
-    // Перетаскивание ползунка, клавиши, якоря — останавливаем свою анимацию
-    ["mousedown", "keydown", "touchstart"].forEach(function (t) {
-      window.addEventListener(t, function () { if (sRaf) { cancelAnimationFrame(sRaf); sRaf = 0; } }, { passive: true });
-    });
+  } else {
+    // Без своей докрутки колёсиком: прокрутка пользователем просто останавливает переезд к блоку
+    window.addEventListener("wheel", function () { if (aRaf) stopAll(); }, { passive: true });
   }
+  // Палец, клавиши, перетаскивание ползунка — человек сам управляет прокруткой
+  ["mousedown", "keydown", "touchstart"].forEach(function (t) {
+    window.addEventListener(t, stopAll, { passive: true });
+  });
 
   /* ---------- Появление при прокрутке + счётчики ---------- */
   function countUp(el) {
