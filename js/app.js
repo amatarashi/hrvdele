@@ -244,21 +244,6 @@
     });
   });
 
-  /* ---------- Плавающая кнопка на телефоне ---------- */
-  var fab = document.querySelector(".fab");
-  var hero = document.querySelector(".hero");
-  var lead = document.getElementById("lead");
-  if (fab && hero && "IntersectionObserver" in window) {
-    var heroVis = true, leadVis = false, footVis = false;
-    var foot = document.querySelector(".footer");
-    var sync = function () { fab.classList.toggle("is-on", !heroVis && !leadVis && !footVis && !cookieOn()); };
-    new IntersectionObserver(function (e) { heroVis = e[0].isIntersecting; sync(); }).observe(hero);
-    if (lead) new IntersectionObserver(function (e) { leadVis = e[0].isIntersecting; sync(); }).observe(lead);
-    /* у подвала прячем: внизу страницы браузеры (Safari, Telegram) выдвигают свою панель поверх кнопки */
-    if (foot) new IntersectionObserver(function (e) { footVis = e[0].isIntersecting; sync(); }).observe(foot);
-    window.addEventListener("hr:cookie", sync);
-  }
-
   /* ---------- Cookie и Метрика (только после согласия) ---------- */
   var bar = document.querySelector(".cookie");
   function cookieOn() { return bar && bar.classList.contains("is-on"); }
