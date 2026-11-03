@@ -42,8 +42,46 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
-  /* ---------- Появление при прокрутке + счётчики ---------- */
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- Плавная прокрутка колёсиком мыши (только ПК; телефон и тачпад — как есть) ---------- */
+  if (!reduce && !shot && window.matchMedia("(pointer: fine)").matches) {
+    var sTarget = 0, sCur = 0, sRaf = 0;
+    var maxY = function () { return document.documentElement.scrollHeight - innerHeight; };
+    // Прокрутка внутри своих областей (текст в форме, лента отзывов, меню) — не трогаем
+    var ownScroll = function (el, dy) {
+      for (; el && el !== document.body && el !== doc; el = el.parentElement) {
+        var oy = getComputedStyle(el).overflowY;
+        if ((oy === "auto" || oy === "scroll") && el.scrollHeight > el.clientHeight + 1) {
+          if ((dy < 0 && el.scrollTop > 0) || (dy > 0 && el.scrollTop + el.clientHeight < el.scrollHeight - 1)) return true;
+        }
+      }
+      return false;
+    };
+    var sStep = function () {
+      sCur += (sTarget - sCur) * 0.11;
+      if (Math.abs(sTarget - sCur) < 0.5) { sCur = sTarget; sRaf = 0; }
+      window.scrollTo({ top: sCur, behavior: "instant" });
+      if (sRaf) sRaf = requestAnimationFrame(sStep);
+    };
+    window.addEventListener("wheel", function (e) {
+      if (e.ctrlKey || e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+      var dy = e.deltaY * (e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? innerHeight : 1);
+      // Мелкие шаги — это тачпад, он и так плавный
+      if (e.deltaMode === 0 && Math.abs(dy) < 40 && !sRaf) return;
+      if (ownScroll(e.target, dy)) return;
+      e.preventDefault();
+      if (!sRaf) { sCur = sTarget = scrollY; }
+      sTarget = Math.max(0, Math.min(maxY(), sTarget + dy));
+      if (!sRaf) sRaf = requestAnimationFrame(sStep);
+    }, { passive: false });
+    // Перетаскивание ползунка, клавиши, якоря — останавливаем свою анимацию
+    ["mousedown", "keydown", "touchstart"].forEach(function (t) {
+      window.addEventListener(t, function () { if (sRaf) { cancelAnimationFrame(sRaf); sRaf = 0; } }, { passive: true });
+    });
+  }
+
+  /* ---------- Появление при прокрутке + счётчики ---------- */
   function countUp(el) {
     var raw = el.getAttribute("data-count");
     var target = parseInt(raw, 10);
