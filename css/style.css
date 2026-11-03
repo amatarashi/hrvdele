@@ -526,11 +526,25 @@ ul { margin: 0; padding: 0; list-style: none; }
 .sit-other p { color: #DCE4FF; max-width: 620px; }
 @media (max-width: 640px) {
   .sit-grid { grid-template-columns: 1fr; }
-  .sit { padding: 22px; gap: 10px; }
-  .sit .svc__icon { width: 46px; height: 46px; border-radius: 12px; }
-  .sit__foot { padding-top: 16px; }
-  .sit__foot .btn { flex: 1 1 100%; }
+  /* Компактная карточка: иконка рядом с заголовком, цена в одну строку */
+  .sit { display: grid; grid-template-columns: 40px minmax(0, 1fr); align-items: center; gap: 10px 12px; padding: 18px; }
+  .sit__head { display: contents; }
+  .sit__num { display: none; }
+  .sit .svc__icon { width: 40px; height: 40px; border-radius: 11px; }
+  .sit .svc__icon svg { width: 20px; height: 20px; }
+  .sit .h-card { font-size: 18px; line-height: 1.2; }
+  .sit > p, .sit__foot { grid-column: 1 / -1; }
+  .sit > p { font-size: 14.5px; line-height: 1.5; }
+  .sit__foot { margin-top: 2px; padding-top: 12px; gap: 10px; }
+  .sit__price { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; font-size: 19px; }
+  .sit__price small { margin: 0; }
+  .sit__foot .btn { flex: 1 1 100%; min-height: 48px; }
   .sit-other .btn { width: 100%; }
+  /* Ссылки — не меньше 44 px в высоту, чтобы попадать пальцем */
+  .logo { display: inline-flex; align-items: center; min-height: 44px; }
+  .svc .link-arrow { min-height: 44px; }
+  .footer li a { padding: 10px 0; }
+  .footer__bottom a { display: inline-block; padding: 13px 0; }
 }
 
 .sit-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
