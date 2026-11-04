@@ -244,6 +244,22 @@
     });
   });
 
+  /* ---------- Цели Метрики: начало заполнения формы и клики по контактам ----------
+     Заявка через форму — главная цель (lead, страница /spasibo/). Клики по телефону
+     и мессенджерам — отдельные цели: звонок без коллтрекинга не проверить, но клик видно. */
+  function goal(name) { if (window.ym && window.HR_METRIKA) window.ym(window.HR_METRIKA, "reachGoal", name); }
+  document.querySelectorAll("form[data-lead]").forEach(function (form) {
+    form.addEventListener("focusin", function once() { goal("form_start"); form.removeEventListener("focusin", once); });
+  });
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest("a[href]");
+    if (!a) return;
+    var h = a.getAttribute("href");
+    var g = /^tel:/.test(h) ? "click_phone" : /t\.me\//.test(h) ? "click_tg" : /wa\.me\//.test(h) ? "click_wa"
+      : /max\.ru\//.test(h) ? "click_max" : /^mailto:/.test(h) ? "click_email" : "";
+    if (g) { goal(g); goal("click_contact"); }
+  });
+
   /* ---------- Cookie и Метрика (только после согласия) ---------- */
   var bar = document.querySelector(".cookie");
   function cookieOn() { return bar && bar.classList.contains("is-on"); }
